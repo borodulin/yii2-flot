@@ -20,6 +20,7 @@
     "require": {
     	"php": ">=5.4.0",
     	"yiisoft/yii2": "*",
+    	"conquer/excanvas": "~1.0.0",
     	"bower-asset/flot": "~0.8.3"
     },
 	"autoload": {
