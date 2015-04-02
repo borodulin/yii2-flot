@@ -26,7 +26,7 @@ class FlotWidget extends \yii\base\Widget
 	public $htmlOptions;
 	
 	/**
-	 * General Plot options
+	 * General Flot options
 	 * @link https://github.com/flot/flot/blob/master/API.md
 	 * @var array()
 	 */
