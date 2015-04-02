@@ -11,15 +11,32 @@ use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\helpers\Json;
 
+/**
+ * Flot home page {@link http://www.flotcharts.org/}
+ */
 class FlotWidget extends \yii\base\Widget
 {
 	
 	public $plugins=[];
 	
+	/**
+	 * Html attributes of placeholder
+	 * @var array()
+	 */
 	public $htmlOptions;
 	
+	/**
+	 * General Plot options
+	 * @link https://github.com/flot/flot/blob/master/API.md
+	 * @var array()
+	 */
 	public $options;
 	
+	/**
+	 * The data is an array of data series:
+	 * @link https://github.com/flot/flot/blob/master/API.md#data-format
+	 * @var array()
+	 */
 	public $data;
 	
 	/**

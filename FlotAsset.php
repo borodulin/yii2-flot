@@ -7,6 +7,10 @@
 namespace conquer\flot;
 
 use yii\helpers\ArrayHelper;
+
+/**
+ * Flot home page {@link http://www.flotcharts.org/}
+ */
 class FlotAsset extends \yii\web\AssetBundle
 {
 	
