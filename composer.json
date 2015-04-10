@@ -1,6 +1,6 @@
 {
     "name": "conquer/flot",
-    "description": "Conquer flot widget",
+    "description": "Yii2 flot widget",
     "keywords": ["yii2", "extension", "widget", "flot"],
     "homepage": "https://github.com/borodulin/yii2-flot",
     "type": "yii2-extension",
