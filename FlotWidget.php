@@ -9,7 +9,7 @@ namespace conquer\flot;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\helpers\Url;
-use yii\helpers\Json;
+use conquer\helpers\Json;
 
 /**
  * Flot home page {@link http://www.flotcharts.org/}
