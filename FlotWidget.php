@@ -6,18 +6,22 @@
  */
 namespace conquer\flot;
 
-use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
-use yii\helpers\Url;
 use conquer\helpers\Json;
 
 /**
- * Flot home page {@link http://www.flotcharts.org/}
+ * Flot home page @link http://www.flotcharts.org
  */
 class FlotWidget extends \yii\base\Widget
 {
 	
-	public $plugins=[];
+	public $plugins = [];
+
+	/**
+	 * Container tag
+	 * @var string
+	 */
+	public $tag = 'div';
 	
 	/**
 	 * Html attributes of placeholder
@@ -46,7 +50,10 @@ class FlotWidget extends \yii\base\Widget
 	public function init()
 	{
 		parent::init();
-		FlotAsset::register($this->getView(), $this->plugins);
+		if (!isset($this->htmlOptions['id'])) {
+		    $this->htmlOptions['id'] = $this->getId();
+		}
+		echo Html::beginTag($this->tag, $this->htmlOptions);
 	}
 	
 	/**
@@ -54,13 +61,16 @@ class FlotWidget extends \yii\base\Widget
 	 */
 	public function run()
 	{
-		$htmlOptions=$this->htmlOptions;
-		if(empty($htmlOptions['id']))
-			$htmlOptions['id']=$this->getId();
-		$data=Json::encode($this->data);
-		$options=Json::encode($this->options);
-		$this->view->registerJs("jQuery.plot('#{$htmlOptions['id']}',$data,$options);");
-		return Html::tag('div','',$htmlOptions);
+	    echo Html::endTag($this->tag);
+	    
+	    $view = $this->getView();
+	    
+	    FlotAsset::register($view, $this->plugins);
+	    
+		$data = Json::encode($this->data);
+		$options = Json::encode($this->options);
+		
+		$view->registerJs("jQuery.plot('#{$this->htmlOptions['id']}', $data, $options);");
 	}
 
 }

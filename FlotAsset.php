@@ -30,19 +30,19 @@ class FlotAsset extends \yii\web\AssetBundle
 	const PLUGIN_THRESHOLD = 'jquery.flot.threshold.js';
 	const PLUGIN_TIME = 'jquery.flot.time.js';
 	
-	private static $_plugins=[];
+	private static $_plugins = [];
 	
 	// The files are not web directory accessible, therefore we need
 	// to specify the sourcePath property. Notice the @bower alias used.
 	public $sourcePath = '@bower/flot';
 	
 	
-	public $js=[];
+	public $js = [];
 	
 	
 	public $depends = [
-			'yii\web\JqueryAsset',
-			'conquer\excanvas\ExcanvasAsset',
+		'yii\web\JqueryAsset',
+		'conquer\excanvas\ExcanvasAsset',
 	];
 	
 	/**
@@ -62,9 +62,11 @@ class FlotAsset extends \yii\web\AssetBundle
 	 * @param View $view the view to be registered with
 	 * @return static the registered asset bundle instance
 	 */
-	public static function register($view, $plugins=[])
-	{	if(!empty($plugins))
-			self::$_plugins=array_unique(ArrayHelper::merge(self::$_plugins, $plugins));		
+	public static function register($view, $plugins = [])
+	{
+	    if (!empty($plugins)) {
+			self::$_plugins = array_unique(ArrayHelper::merge(self::$_plugins, $plugins));
+	    }
 		return $view->registerAssetBundle(get_called_class());
 	}
 	
