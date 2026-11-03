@@ -1,7 +1,12 @@
 {
     "name": "conquer/flot",
     "description": "Yii2 flot widget",
-    "keywords": ["yii2", "extension", "widget", "flot"],
+    "keywords": [
+        "yii2",
+        "extension",
+        "widget",
+        "flot"
+    ],
     "homepage": "https://github.com/borodulin/yii2-flot",
     "type": "yii2-extension",
     "license": "MIT",
@@ -13,19 +18,19 @@
     ],
     "extra": {
         "branch-alias": {
-          "dev-master": "1.0.2.x-dev"
+            "dev-master": "1.0.2.x-dev"
         }
-      },
-    "require": {
-    	"php": ">=5.4.0",
-    	"yiisoft/yii2": "*",
-    	"conquer/excanvas": "*",
-    	"conquer/helpers": "*",
-    	"bower-asset/flot": "~0.8.3"
     },
-	"autoload": {
-		"psr-4": {
-			"conquer\\flot\\": ""
-		}
-	}
+    "require": {
+        "php": "^7.4 || ^8.0",
+        "yiisoft/yii2": "^2.0",
+        "conquer/excanvas": "^1.0",
+        "conquer/helpers": "^2.0",
+        "bower-asset/flot": "~0.8.3"
+    },
+    "autoload": {
+        "psr-4": {
+            "conquer\\flot\\": ""
+        }
+    }
 }
