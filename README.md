@@ -21,7 +21,7 @@ For more information please visit [Flot](http://www.flotcharts.org/)
 Install the extension via [Composer](https://getcomposer.org):
 
 ```bash
-composer require conquer/flot:^1.0
+composer require conquer/flot:^1.1
 ```
 
 ## Usage
@@ -67,6 +67,9 @@ use conquer\flot\FlotWidget;
     ],
 ]); =>
 ```
+
+> **Security (1.1.0):** `data` is encoded as plain JSON, strings with the `js:` prefix in it are no longer
+> turned into JavaScript, so series labels taken from users cannot inject code. Put callbacks into `options`.
 
 ## License
 

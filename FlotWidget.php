@@ -7,6 +7,7 @@
 namespace conquer\flot;
 
 use yii\helpers\Html;
+use yii\helpers\Json as DataJson;
 use conquer\helpers\Json;
 
 /**
@@ -39,6 +40,8 @@ class FlotWidget extends \yii\base\Widget
 	/**
 	 * The data is an array of data series:
 	 * @link https://github.com/flot/flot/blob/master/API.md#data-format
+	 * The data is encoded as plain JSON: strings with the "js:" prefix are NOT turned into JavaScript,
+	 * so labels coming from users are safe. Put callbacks into $options.
 	 * @var array()
 	 */
 	public $data;
@@ -67,7 +70,7 @@ class FlotWidget extends \yii\base\Widget
 	    
 	    FlotAsset::register($view, $this->plugins);
 	    
-		$data = Json::encode($this->data);
+		$data = DataJson::htmlEncode($this->data);
 		$options = Json::encode($this->options);
 		
 		$view->registerJs("jQuery.plot('#{$this->htmlOptions['id']}', $data, $options);");
