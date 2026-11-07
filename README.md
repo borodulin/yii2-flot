@@ -10,14 +10,14 @@
 [Flot](https://github.com/flot/flot) is a JavaScript plotting library for jQuery. This extension provides
 a widget and an asset bundle for Flot 4 and its plugins.
 
-| conquer/flot | Flot | Branch |
-|---|---|---|
-| 2.x | 4.2 | `master` |
-| 1.x | 0.8.3 | [`1.x`](https://github.com/borodulin/yii2-flot/tree/1.x) |
+| conquer/flot | Flot | PHP | Branch |
+|---|---|---|---|
+| 2.x | 4.2 | 8.0+ | `master` |
+| 1.x | 0.8.3 | 7.4+ | [`1.x`](https://github.com/borodulin/yii2-flot/tree/1.x) |
 
 ## Requirements
 
-- PHP 7.4 or 8.x
+- PHP 8.0 or later (PHP 7.4: use conquer/flot 1.x)
 - Yii 2.0
 - [asset-packagist](https://asset-packagist.org) repository configured in your application's `composer.json` (standard for Yii2 app templates)
 
@@ -129,7 +129,8 @@ plot.draw();
 
 ## Upgrading from 1.x
 
-2.0 uses Flot 4 (`npm-asset/flot`) instead of Flot 0.8.3 (`bower-asset/flot`). See the
+2.0 uses Flot 4 (`npm-asset/flot`) instead of Flot 0.8.3 (`bower-asset/flot`) and requires PHP 8.0:
+Composer on PHP 7.4 refuses to unpack npm packages (tar archives). See the
 [Flot changelog](https://github.com/flot/flot/blob/master/CHANGELOG.md) for the details; the most visible changes:
 
 - **Time axis values are seconds by default.** Divide JavaScript timestamps by 1000 or set
