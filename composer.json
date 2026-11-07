@@ -1,15 +1,20 @@
 {
     "name": "conquer/flot",
-    "description": "Yii2 flot widget",
+    "description": "Flot charts widget for Yii2",
     "keywords": [
         "yii2",
         "extension",
         "widget",
-        "flot"
+        "flot",
+        "chart"
     ],
     "homepage": "https://github.com/borodulin/yii2-flot",
     "type": "yii2-extension",
     "license": "MIT",
+    "support": {
+        "issues": "https://github.com/borodulin/yii2-flot/issues",
+        "source": "https://github.com/borodulin/yii2-flot"
+    },
     "authors": [
         {
             "name": "Andrey Borodulin",
@@ -18,19 +23,38 @@
     ],
     "extra": {
         "branch-alias": {
-            "dev-master": "1.0.x-dev"
+            "dev-master": "1.2.x-dev"
         }
     },
     "require": {
         "php": "^7.4 || ^8.0",
         "yiisoft/yii2": "^2.0",
-        "conquer/excanvas": "^1.0",
-        "conquer/helpers": "^2.0",
-        "bower-asset/flot": "~0.8.3"
+        "conquer/helpers": "^2.2.1",
+        "bower-asset/flot": "~0.8.3",
+        "ext-mbstring": "*"
     },
     "autoload": {
         "psr-4": {
             "conquer\\flot\\": ""
+        }
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.6"
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "conquer\\flot\\tests\\": "tests/"
+        }
+    },
+    "repositories": [
+        {
+            "type": "composer",
+            "url": "https://asset-packagist.org"
+        }
+    ],
+    "config": {
+        "allow-plugins": {
+            "yiisoft/yii2-composer": true
         }
     }
 }
