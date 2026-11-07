@@ -23,14 +23,14 @@
     ],
     "extra": {
         "branch-alias": {
-            "dev-master": "1.2.x-dev"
+            "dev-master": "2.0.x-dev"
         }
     },
     "require": {
         "php": "^7.4 || ^8.0",
         "yiisoft/yii2": "^2.0",
         "conquer/helpers": "^2.2.1",
-        "bower-asset/flot": "~0.8.3",
+        "npm-asset/flot": "^4.2.6",
         "ext-mbstring": "*"
     },
     "autoload": {

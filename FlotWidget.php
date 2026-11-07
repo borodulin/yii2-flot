@@ -24,13 +24,13 @@ use yii\helpers\Json as DataJson;
  *
  * The plot object is available in JavaScript as `jQuery('#id').data('plot')`.
  *
- * @link https://www.flotcharts.org
+ * @link https://github.com/flot/flot
  * @author Andrey Borodulin
  */
 class FlotWidget extends Widget
 {
     /**
-     * Plugins to load, see the FlotAsset::PLUGIN_* constants
+     * Plugins to load, see the FlotAsset::PLUGIN_* constants (most plugins are always loaded)
      * @var string[]
      */
     public $plugins = [];
@@ -50,7 +50,7 @@ class FlotWidget extends Widget
     /**
      * Flot options. Strings with the "js:" prefix are turned into JavaScript (callbacks such as
      * `tickFormatter`), so do not put data coming from users here.
-     * @link https://github.com/flot/flot/blob/v0.8.3/API.md#plot-options
+     * @link https://github.com/flot/flot/blob/master/docs/API.md#plot-options
      * @var array
      */
     public $options = [];
@@ -59,16 +59,15 @@ class FlotWidget extends Widget
      * Data series.
      * The data is encoded as plain JSON: strings with the "js:" prefix are NOT turned into JavaScript
      * (put callbacks into $options), and labels are HTML-encoded, see [[encodeLabels]].
-     * @link https://github.com/flot/flot/blob/v0.8.3/API.md#data-format
+     * @link https://github.com/flot/flot/blob/master/docs/API.md#data-format
      * @var array
      */
     public $data = [];
 
     /**
-     * Whether to HTML-encode the series labels and the string values of the data points.
-     * Flot inserts them into the page as HTML: labels into the legend and pie labels,
-     * strings of the categories mode into the axis tick labels. Disable it only if the data
-     * is trusted and contains intended markup.
+     * Whether to HTML-encode the series labels: Flot inserts them into the legend and pie labels
+     * as markup. Disable it only if the labels are trusted and contain intended markup.
+     * Axis tick labels (including the strings of the categories mode) are plain text in Flot 4.
      * @var bool
      */
     public $encodeLabels = true;
@@ -123,42 +122,15 @@ class FlotWidget extends Widget
     }
 
     /**
-     * HTML-encodes the label and the string values of a series
-     * @param mixed $series a series options array (with "data", "label" keys) or an array of points
+     * HTML-encodes the label of a series
+     * @param mixed $series a series options array or an array of points
      * @return mixed
      */
     protected function encodeSeries($series)
     {
-        if (!is_array($series)) {
-            return $series;
-        }
-        if (!array_key_exists('data', $series) && !array_key_exists('label', $series)) {
-            return $this->encodePoints($series);
-        }
-        if (isset($series['label']) && is_string($series['label'])) {
+        if (is_array($series) && isset($series['label']) && is_string($series['label'])) {
             $series['label'] = Html::encode($series['label']);
         }
-        if (isset($series['data']) && is_array($series['data'])) {
-            $series['data'] = $this->encodePoints($series['data']);
-        }
         return $series;
-    }
-
-    /**
-     * @param array $points
-     * @return array
-     */
-    private function encodePoints(array $points)
-    {
-        foreach ($points as $i => $point) {
-            if (is_array($point)) {
-                foreach ($point as $j => $value) {
-                    if (is_string($value)) {
-                        $points[$i][$j] = Html::encode($value);
-                    }
-                }
-            }
-        }
-        return $points;
     }
 }

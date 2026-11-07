@@ -62,7 +62,7 @@ class FlotWidgetTest extends TestCase
         ]);
         $this->assertSame('<div id="w0"></div>', $widget);
         $this->assertMatchesRegularExpression('#src="/assets/\w+/jquery\.js"#', $html);
-        $this->assertMatchesRegularExpression('#src="/assets/\w+/jquery\.flot\.js"#', $html);
+        $this->assertMatchesRegularExpression('#src="/assets/\w+/dist/es5/jquery\.flot\.js"#', $html);
         $this->assertStringContainsString('jQuery.plot(jQuery(document.getElementById("w0")), '
             . '[{"label":"Visits","data":[[1,10],[2,30]]}], {"series":{"lines":{"show":true}}});', $html);
         $this->assertStringContainsString(':where([id="w0"]){height:300px}', $html);
@@ -77,13 +77,22 @@ class FlotWidgetTest extends TestCase
     public function testPluginsOfAllWidgetsAreLoaded()
     {
         list(, $html) = $this->render(
-            ['plugins' => [FlotAsset::PLUGIN_TIME]],
-            ['plugins' => [FlotAsset::PLUGIN_PIE, FlotAsset::PLUGIN_TIME]]
+            ['plugins' => [FlotAsset::PLUGIN_PIE]],
+            ['plugins' => [FlotAsset::PLUGIN_CROSSHAIR, FlotAsset::PLUGIN_PIE, FlotAsset::PLUGIN_TIME]]
         );
-        $this->assertSame(1, substr_count($html, 'jquery.flot.time.js'));
-        $this->assertSame(1, substr_count($html, 'jquery.flot.pie.js'));
+        $this->assertSame(1, substr_count($html, 'source/jquery.flot.pie.js'));
+        $this->assertSame(1, substr_count($html, 'source/jquery.flot.crosshair.js'));
+        // time is part of the Flot bundle
+        $this->assertStringNotContainsString('jquery.flot.time.js', $html);
         // plugins come after the core
-        $this->assertGreaterThan(strpos($html, 'jquery.flot.js'), strpos($html, 'jquery.flot.time.js'));
+        $this->assertGreaterThan(strpos($html, 'dist/es5/jquery.flot.js'), strpos($html, 'source/jquery.flot.pie.js'));
+    }
+
+    public function testLegacyPluginFileNames()
+    {
+        list(, $html) = $this->render(['plugins' => ['jquery.flot.pie.js', 'jquery.flot.time.js', 'jquery.colorhelpers.js', 'jquery.flot.symbol.js']]);
+        $this->assertSame(1, substr_count($html, 'source/jquery.flot.pie.js'));
+        $this->assertSame(3, substr_count($html, '<script src=')); // jquery, flot, pie
     }
 
     public function testPluginsAreNotSharedBetweenApplications()
@@ -98,21 +107,24 @@ class FlotWidgetTest extends TestCase
     public function testUnknownPlugin()
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Unknown Flot plugin "jquery.flot.foo.js". Available plugins: jquery.colorhelpers.js,');
-        $this->render(['plugins' => ['jquery.flot.foo.js']]);
+        $this->expectExceptionMessage('Unknown Flot plugin "jquery.flot.canvas.js". Available plugins: crosshair, image, pie,');
+        $this->render(['plugins' => ['jquery.flot.canvas.js']]);
     }
 
     public function testAllPluginsArePublished()
     {
         list(, $html) = $this->render(['plugins' => FlotAsset::availablePlugins()]);
-        $this->assertCount(15, FlotAsset::availablePlugins());
-        preg_match('#src="/assets/(\w+)/jquery\.flot\.js"#', $html, $m);
+        preg_match('#src="/assets/(\w+)/dist/es5/jquery\.flot\.js"#', $html, $m);
         $dir = $this->assetPath . '/' . $m[1];
-        foreach (FlotAsset::availablePlugins() as $plugin) {
-            $this->assertFileExists("$dir/$plugin");
+        $this->assertCount(5, FlotAsset::$pluginFiles);
+        foreach (FlotAsset::$pluginFiles as $file) {
+            $this->assertFileExists("$dir/$file");
+            $this->assertStringContainsString($file, $html);
         }
-        // only the scripts are published, not the examples
+        // only the scripts are published, not the examples and docs
         $this->assertDirectoryDoesNotExist("$dir/examples");
+        $this->assertDirectoryDoesNotExist("$dir/docs");
+        $this->assertFileDoesNotExist("$dir/source/jquery.js");
     }
 
     public function testIdIsEscaped()
@@ -162,14 +174,14 @@ class FlotWidgetTest extends TestCase
     {
         $label = '<img src=x onerror=alert(1)>';
         list(, $html) = $this->render(
-            ['data' => [['label' => $label, 'data' => [[$label, 1], ['5', 2]]], [[$label, 3]]]],
+            ['data' => [['label' => $label, 'data' => [[$label, 1]]], [['x', 3]]]],
             ['data' => [['label' => '<b>Bold</b>', 'data' => [[1, 2]]]], 'encodeLabels' => false]
         );
         $u = '\\' . 'u';
-        $encoded = '&amp;lt;img src=x onerror=alert(1)&amp;gt;';
-        $encoded = str_replace(['&amp;', '&'], ['&', $u . '0026'], $encoded);
-        $encoded = '"' . $encoded . '"';
-        $this->assertStringContainsString('[{"label":' . $encoded . ',"data":[[' . $encoded . ',1],["5",2]]},[[' . $encoded . ',3]]]', $html);
+        $encoded = '"' . $u . '0026lt;img src=x onerror=alert(1)' . $u . '0026gt;"';
+        $raw = '"' . $u . '003Cimg src=x onerror=alert(1)' . $u . '003E"';
+        // category strings are plain text in Flot 4, they are not encoded
+        $this->assertStringContainsString('[{"label":' . $encoded . ',"data":[[' . $raw . ',1]]},[["x",3]]]', $html);
         $this->assertStringContainsString('[{"label":"' . $u . '003Cb' . $u . '003EBold' . $u . '003C\/b' . $u . '003E"', $html);
     }
 }

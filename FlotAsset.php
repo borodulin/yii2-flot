@@ -11,48 +11,72 @@ use yii\base\InvalidArgumentException;
 use yii\web\AssetBundle;
 
 /**
- * Flot and its plugins
+ * Flot 4 and its plugins
+ *
+ * Most plugins (time, categories, stack, navigate, selection, legend, hover, axis labels...) are part
+ * of the Flot bundle and are always available. The others are loaded on request:
  *
  * ```php
- * FlotAsset::register($view, [FlotAsset::PLUGIN_TIME, FlotAsset::PLUGIN_PIE]);
+ * FlotAsset::register($view, [FlotAsset::PLUGIN_PIE]);
  * ```
  *
- * @link https://www.flotcharts.org
+ * @link https://github.com/flot/flot
  * @author Andrey Borodulin
  */
 class FlotAsset extends AssetBundle
 {
-    const PLUGIN_COLORHELPERS = 'jquery.colorhelpers.js';
-    const PLUGIN_CANVAS = 'jquery.flot.canvas.js';
-    const PLUGIN_CATEGORIES = 'jquery.flot.categories.js';
-    const PLUGIN_CROSSHAIR = 'jquery.flot.crosshair.js';
-    const PLUGIN_ERRORBARS = 'jquery.flot.errorbars.js';
-    const PLUGIN_FILLBETWEEN = 'jquery.flot.fillbetween.js';
-    const PLUGIN_IMAGE = 'jquery.flot.image.js';
-    const PLUGIN_NAVIGATE = 'jquery.flot.navigate.js';
-    const PLUGIN_PIE = 'jquery.flot.pie.js';
-    const PLUGIN_RESIZE = 'jquery.flot.resize.js';
-    const PLUGIN_SELECTION = 'jquery.flot.selection.js';
-    const PLUGIN_STACK = 'jquery.flot.stack.js';
-    const PLUGIN_SYMBOL = 'jquery.flot.symbol.js';
-    const PLUGIN_THRESHOLD = 'jquery.flot.threshold.js';
-    const PLUGIN_TIME = 'jquery.flot.time.js';
+    // plugins loaded on request
+    const PLUGIN_CROSSHAIR = 'crosshair';
+    const PLUGIN_IMAGE = 'image';
+    const PLUGIN_PIE = 'pie';
+    const PLUGIN_RESIZE = 'resize';
+    const PLUGIN_THRESHOLD = 'threshold';
+
+    // plugins of the Flot bundle, always loaded
+    const PLUGIN_AXISLABELS = 'axislabels';
+    const PLUGIN_CATEGORIES = 'categories';
+    const PLUGIN_COLORHELPERS = 'colorhelpers';
+    const PLUGIN_COMPOSEIMAGES = 'composeImages';
+    const PLUGIN_ERRORBARS = 'errorbars';
+    const PLUGIN_FILLBETWEEN = 'fillbetween';
+    const PLUGIN_FLATDATA = 'flatdata';
+    const PLUGIN_HOVER = 'hover';
+    const PLUGIN_LEGEND = 'legend';
+    const PLUGIN_LOGAXIS = 'logaxis';
+    const PLUGIN_NAVIGATE = 'navigate';
+    const PLUGIN_SELECTION = 'selection';
+    const PLUGIN_STACK = 'stack';
+    const PLUGIN_SYMBOL = 'symbol';
+    const PLUGIN_TIME = 'time';
+    const PLUGIN_TOUCH = 'touch';
+    const PLUGIN_TOUCHNAVIGATE = 'touchNavigate';
+
+    /**
+     * @var string[] files of the plugins that are not in the Flot bundle
+     */
+    public static $pluginFiles = [
+        self::PLUGIN_CROSSHAIR => 'source/jquery.flot.crosshair.js',
+        self::PLUGIN_IMAGE => 'source/jquery.flot.image.js',
+        self::PLUGIN_PIE => 'source/jquery.flot.pie.js',
+        self::PLUGIN_RESIZE => 'source/jquery.flot.resize.js',
+        self::PLUGIN_THRESHOLD => 'source/jquery.flot.threshold.js',
+    ];
 
     /**
      * @inheritdoc
      */
-    public $sourcePath = '@bower/flot';
+    public $sourcePath = '@npm/flot';
 
     /**
      * @inheritdoc
      */
-    public $js = ['jquery.flot.js'];
+    public $js = ['dist/es5/jquery.flot.js'];
 
     /**
      * @inheritdoc
      */
     public $publishOptions = [
-        'only' => ['jquery.*.js'],
+        'only' => ['dist/es5/jquery.flot.js', 'source/jquery.flot.*.js'],
     ];
 
     /**
@@ -67,7 +91,7 @@ class FlotAsset extends AssetBundle
      * Plugins requested by every widget on the page are loaded.
      *
      * @param \yii\web\View $view
-     * @param string[] $plugins plugin files, see the PLUGIN_* constants
+     * @param string[] $plugins see the PLUGIN_* constants
      * @return static the registered asset bundle instance
      * @throws InvalidArgumentException for an unknown plugin
      */
@@ -80,25 +104,27 @@ class FlotAsset extends AssetBundle
     }
 
     /**
-     * @param string[] $plugins plugin files, see the PLUGIN_* constants
+     * @param string[] $plugins see the PLUGIN_* constants. File names of conquer/flot 1.x
+     * (`jquery.flot.pie.js`) are accepted too.
      * @throws InvalidArgumentException for an unknown plugin
      */
     public function addPlugins(array $plugins)
     {
         $available = static::availablePlugins();
         foreach ($plugins as $plugin) {
-            if (!in_array($plugin, $available, true)) {
+            $name = static::normalizePluginName($plugin);
+            if ($name === null) {
                 throw new InvalidArgumentException("Unknown Flot plugin \"$plugin\". Available plugins: "
                     . implode(', ', $available) . '.');
             }
-            if (!in_array($plugin, $this->js, true)) {
-                $this->js[] = $plugin;
+            if (isset(static::$pluginFiles[$name]) && !in_array(static::$pluginFiles[$name], $this->js, true)) {
+                $this->js[] = static::$pluginFiles[$name];
             }
         }
     }
 
     /**
-     * @return string[] plugin files (values of the PLUGIN_* constants)
+     * @return string[] plugin names (values of the PLUGIN_* constants)
      */
     public static function availablePlugins()
     {
@@ -109,5 +135,25 @@ class FlotAsset extends AssetBundle
             }
         }
         return $plugins;
+    }
+
+    /**
+     * @param string $plugin plugin name or 1.x file name
+     * @return string|null plugin name, null if unknown
+     */
+    protected static function normalizePluginName($plugin)
+    {
+        $available = static::availablePlugins();
+        if (in_array($plugin, $available, true)) {
+            return $plugin;
+        }
+        if (is_string($plugin) && preg_match('/^jquery\.(?:flot\.)?(\w+)\.js$/', $plugin, $m)) {
+            foreach ($available as $name) {
+                if (strcasecmp($name, $m[1]) === 0) {
+                    return $name;
+                }
+            }
+        }
+        return null;
     }
 }
